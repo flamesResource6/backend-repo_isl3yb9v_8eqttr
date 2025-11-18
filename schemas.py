@@ -11,38 +11,17 @@ Model name is converted to lowercase for the collection name:
 - BlogPost -> "blogs" collection
 """
 
-from pydantic import BaseModel, Field
-from typing import Optional
+from pydantic import BaseModel, Field, HttpUrl, EmailStr
+from typing import Optional, List
 
-# Example schemas (replace with your own):
-
-class User(BaseModel):
+class Playeruser(BaseModel):
     """
-    Users collection schema
-    Collection name: "user" (lowercase of class name)
+    Voxell DLC players collection schema
+    Collection name: "playeruser" (lowercase of class name)
     """
-    name: str = Field(..., description="Full name")
-    email: str = Field(..., description="Email address")
-    address: str = Field(..., description="Address")
-    age: Optional[int] = Field(None, ge=0, le=120, description="Age in years")
-    is_active: bool = Field(True, description="Whether user is active")
-
-class Product(BaseModel):
-    """
-    Products collection schema
-    Collection name: "product" (lowercase of class name)
-    """
-    title: str = Field(..., description="Product title")
-    description: Optional[str] = Field(None, description="Product description")
-    price: float = Field(..., ge=0, description="Price in dollars")
-    category: str = Field(..., description="Product category")
-    in_stock: bool = Field(True, description="Whether product is in stock")
-
-# Add your own schemas here:
-# --------------------------------------------------
-
-# Note: The Flames database viewer will automatically:
-# 1. Read these schemas from GET /schema endpoint
-# 2. Use them for document validation when creating/editing
-# 3. Handle all database operations (CRUD) directly
-# 4. You don't need to create any database endpoints!
+    email: EmailStr = Field(..., description="Уникальная почта игрока")
+    password_hash: str = Field(..., description="Хэш пароля (bcrypt)")
+    nickname: str = Field(..., min_length=3, max_length=32, description="Никнейм игрока")
+    avatar_url: Optional[HttpUrl] = Field(None, description="URL аватара")
+    roles: List[str] = Field(default_factory=lambda: ["player"], description="Роли пользователя (player, moderator, admin)")
+    is_active: bool = Field(True, description="Аккаунт активен")
